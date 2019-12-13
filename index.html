@@ -1,0 +1,76 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: sans-serif;
+        }
+        button {
+            background: transparent;
+            width: 100px;
+            height: 50px;
+            font-size: medium;
+            border-radius: 4px;
+            margin-bottom: 50px;
+        }
+        section {
+            width: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .inner {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+    <section>
+        <button>Start</button>
+        <p id="status"></p>
+        <p id="text"></p>
+    </section>
+<body>
+    <script>
+        const STATUS = 'Статус: ';
+        const TEXT = 'Ты сейчас произнёс:';
+
+        const statusBlock = document.getElementById('status');
+        const textBlock = document.getElementById('text');
+        const createStatus = status => STATUS  + status;
+        const createText = text => TEXT + '<div class="inner">' + text + '</div>';
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = "ru";
+        recognition.onresult = e => {
+            const transcript = event.results[0][0].transcript;
+            
+            const answer = new SpeechSynthesisUtterance('Вы сейчас сказали:' + transcript)
+            textBlock.innerHTML = createText(transcript);
+            setTimeout(() => speechSynthesis.speak(
+                answer
+            ), 2000);
+        };
+
+        recognition.onaudiostart = e => {
+            statusBlock.innerHTML = createStatus('Начали захват аудио');
+        }
+
+        recognition.onaudioend = e => {
+            statusBlock.innerHTML = createStatus('Закончили захват аудио');
+        }
+
+        function start() {
+            recognition.start()
+        }
+
+        document.querySelector('button').addEventListener('click', start);
+    </script>
+</body>
+</html>
